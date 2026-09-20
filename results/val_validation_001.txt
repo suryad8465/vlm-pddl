@@ -1,0 +1,23 @@
+PHASE 1 VAL VALIDATION
+
+Domain:
+domain/household.pddl
+
+Problem:
+problems/working_001.pddl
+
+Plan:
+sas_plan
+
+VAL result:
+Plan executed successfully - checking goal
+Plan valid
+
+Final value:
+4
+
+Validated plan:
+move living_room kitchen
+pickup mug table kitchen
+move kitchen living_room
+place-at-location mug living_room
