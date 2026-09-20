@@ -1,0 +1,174 @@
+PHASE 1 EXPERIMENT
+
+Task:
+bring the mug to the living room table
+
+VLM generation time:
+1.23 seconds
+
+Generated PDDL:
+----------------------------------------
+(define (problem household-problem-1)
+  (:domain household)
+
+  (:objects
+    kitchen living_room - location
+    table mug kettle robot - object
+  )
+
+  (:init
+    (robot-at living_room)
+    (connected kitchen living_room)
+    (connected living_room kitchen)
+    (located table kitchen)
+    (located mug kitchen)
+    (located kettle kitchen)
+    (on mug table)
+    (on kettle table)
+    (manipulable mug)
+    (manipulable kettle)
+  )
+
+  (:goal
+    (located mug living_room)
+  )
+)
+----------------------------------------
+
+Planner exit code:
+0
+
+Planner output:
+----------------------------------------
+INFO     planner time limit: None
+INFO     planner memory limit: None
+
+INFO     Running translator.
+INFO     translator stdin: None
+INFO     translator time limit: None
+INFO     translator memory limit: None
+INFO     translator command line string: /home/surya/dissertation/vlm/.venv/bin/python -m translate domain/household.pddl problems/generated_001.pddl --sas-file output.sas
+Parsing...
+Parsing: [0.000s CPU, 0.002s wall-clock]
+Normalizing task... [0.000s CPU, 0.000s wall-clock]
+Instantiating...
+Generating Datalog program... [0.000s CPU, 0.000s wall-clock]
+Normalizing Datalog program...
+Normalizing Datalog program: [0.000s CPU, 0.001s wall-clock]
+Preparing model... [0.010s CPU, 0.000s wall-clock]
+Generated 23 rules.
+Computing model... [0.000s CPU, 0.000s wall-clock]
+66 relevant atoms
+43 auxiliary atoms
+109 final queue length
+155 total queue pushes
+Completing instantiation... [0.000s CPU, 0.000s wall-clock]
+Instantiating: [0.010s CPU, 0.002s wall-clock]
+Computing fact groups...
+Finding invariants...
+10 initial candidates
+Finding invariants: [0.000s CPU, 0.001s wall-clock]
+Checking invariant weight... [0.000s CPU, 0.000s wall-clock]
+Instantiating groups... [0.000s CPU, 0.000s wall-clock]
+Collecting mutex groups... [0.000s CPU, 0.000s wall-clock]
+Choosing groups...
+5 uncovered facts
+Choosing groups: [0.000s CPU, 0.000s wall-clock]
+Building translation key... [0.000s CPU, 0.000s wall-clock]
+Computing fact groups: [0.000s CPU, 0.001s wall-clock]
+Building STRIPS to SAS dictionary... [0.000s CPU, 0.000s wall-clock]
+Building dictionary for full mutex groups... [0.000s CPU, 0.000s wall-clock]
+Building mutex information...
+Building mutex information: [0.000s CPU, 0.000s wall-clock]
+Translating task...
+Processing axioms...
+Simplifying axioms... [0.000s CPU, 0.000s wall-clock]
+Translator axioms removed by simplifying: 0
+Processing axioms: [0.000s CPU, 0.000s wall-clock]
+Translating task: [0.000s CPU, 0.001s wall-clock]
+0 effect conditions simplified
+0 implied preconditions added
+Detecting unreachable propositions...
+0 operators removed
+0 axioms removed
+7 propositions removed
+Detecting unreachable propositions: [0.000s CPU, 0.000s wall-clock]
+Reordering and filtering variables...
+5 of 5 variables necessary.
+0 of 3 mutex groups necessary.
+28 of 28 operators necessary.
+0 of 0 axiom rules necessary.
+Reordering and filtering variables: [0.000s CPU, 0.000s wall-clock]
+Translator variables: 5
+Translator derived variables: 0
+Translator facts: 16
+Translator goal facts: 1
+Translator mutex groups: 0
+Translator total mutex groups size: 0
+Translator operators: 28
+Translator axioms: 0
+Translator task size: 146
+Translator peak memory: 34544 KB
+Writing output... [0.010s CPU, 0.000s wall-clock]
+Done! [0.020s CPU, 0.007s wall-clock]
+translate exit code: 0
+
+INFO     Running search (release).
+INFO     search stdin: output.sas
+INFO     search time limit: None
+INFO     search memory limit: None
+INFO     search command line string: /home/surya/downward/builds/release/bin/downward --search 'astar(lmcut())' --internal-plan-file sas_plan < output.sas
+[t=0.000138s, 11360 KB] Search code revision: 6230635cc
+[t=0.000288s, 11360 KB] reading input...
+[t=0.000451s, 11360 KB] done reading input!
+[t=0.001388s, 11756 KB] Initializing landmark cut heuristic...
+[t=0.001452s, 11756 KB] Building successor generator... done!
+[t=0.001544s, 11756 KB] peak memory difference for successor generator creation: 0 KB
+[t=0.001571s, 11756 KB] time for successor generation creation: 0.000014s
+[t=0.001611s, 11756 KB] Variables: 5
+[t=0.001642s, 11756 KB] FactPairs: 16
+[t=0.001669s, 11756 KB] Bytes per state: 4
+[t=0.001693s, 11756 KB] Conducting best first search with reopening closed nodes, (real) bound = 2147483647
+[t=0.001739s, 11756 KB] New best heuristic value for lmcut: 3
+[t=0.001774s, 11756 KB] g=0, 1 evaluated, 0 expanded
+[t=0.001794s, 11756 KB] f = 3, 1 evaluated, 0 expanded
+[t=0.001825s, 11756 KB] Initial heuristic value for lmcut: 3
+[t=0.001855s, 11756 KB] pruning method: none
+[t=0.001886s, 11756 KB] f = 4, 2 evaluated, 1 expanded
+[t=0.001921s, 11756 KB] New best heuristic value for lmcut: 2
+[t=0.001949s, 11756 KB] g=2, 4 evaluated, 2 expanded
+[t=0.001981s, 11756 KB] New best heuristic value for lmcut: 1
+[t=0.002009s, 11756 KB] g=3, 5 evaluated, 3 expanded
+[t=0.002049s, 11756 KB] New best heuristic value for lmcut: 0
+[t=0.002077s, 11756 KB] g=4, 10 evaluated, 4 expanded
+[t=0.002106s, 11756 KB] Solution found!
+[t=0.002134s, 11756 KB] Actual search time: 0.000275s
+move living_room kitchen (1)
+pickup mug table kitchen (1)
+move kitchen living_room (1)
+place-at-location mug living_room (1)
+[t=0.002163s, 11756 KB] Plan length: 4 step(s).
+[t=0.002163s, 11756 KB] Plan cost: 4
+[t=0.002163s, 11756 KB] Expanded 5 state(s).
+[t=0.002163s, 11756 KB] Reopened 0 state(s).
+[t=0.002163s, 11756 KB] Evaluated 10 state(s).
+[t=0.002163s, 11756 KB] Evaluations: 10
+[t=0.002163s, 11756 KB] Generated 12 state(s).
+[t=0.002163s, 11756 KB] Dead ends: 1 state(s).
+[t=0.002163s, 11756 KB] Expanded until last jump: 1 state(s).
+[t=0.002163s, 11756 KB] Reopened until last jump: 0 state(s).
+[t=0.002163s, 11756 KB] Evaluated until last jump: 2 state(s).
+[t=0.002163s, 11756 KB] Generated until last jump: 1 state(s).
+[t=0.002163s, 11756 KB] Number of registered states: 10
+[t=0.002163s, 11756 KB] Int hash set load factor: 10/16 = 0.625000
+[t=0.002163s, 11756 KB] Int hash set resizes: 4
+[t=0.002163s, 11756 KB] Search time: 0.000471s
+[t=0.002163s, 11756 KB] Total time: 0.002163s
+Solution found.
+Peak memory: 11756 KB
+Remove intermediate file output.sas
+search exit code: 0
+
+INFO     Planner time: 0.16s
+
+----------------------------------------

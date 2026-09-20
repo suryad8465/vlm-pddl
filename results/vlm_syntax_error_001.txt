@@ -1,0 +1,58 @@
+PHASE 1 EXPERIMENT
+
+Task:
+bring the mug to the living room table
+
+VLM generation time:
+1.25 seconds
+
+Generated PDDL:
+----------------------------------------
+(:domain household)
+
+(:objects
+  kitchen living_room - location
+  table mug kettle robot - object
+)
+
+(:init
+  (robot-at living_room)
+  (connected kitchen living_room)
+  (connected living_room kitchen)
+  (located table kitchen)
+  (located mug kitchen)
+  (located kettle kitchen)
+  (located robot living_room)
+  (on mug table)
+  (on kettle table)
+  (manipulable mug)
+  (manipulable kettle)
+)
+
+(:goal
+  (located mug living_room)
+)
+----------------------------------------
+
+Planner exit code:
+31
+
+Planner output:
+----------------------------------------
+INFO     planner time limit: None
+INFO     planner memory limit: None
+
+INFO     Running translator.
+INFO     translator stdin: None
+INFO     translator time limit: None
+INFO     translator memory limit: None
+INFO     translator command line string: /home/surya/dissertation/vlm/.venv/bin/python -m translate domain/household.pddl problems/generated_001.pddl --sas-file output.sas
+Parsing...
+Error: Could not parse problem file: problems/generated_001.pddl
+Reason: Tokens remaining after parsing: ( :objects kitchen living_room - location table mug kettle robot - object ) ( :init ( robot-at living_room ) ( connected kitchen living_room ) ( connected living_room kitchen ) ( located table kitchen ) ( located mug kitchen ) ( located kettle kitchen ) ( located robot living_room ) ( on mug table ) ( on kettle table ) ( manipulable mug ) ( manipulable kettle ) ) ( :goal ( located mug living_room ) )
+translate exit code: 31
+
+Driver aborting after translate
+INFO     Planner time: 0.13s
+
+----------------------------------------
