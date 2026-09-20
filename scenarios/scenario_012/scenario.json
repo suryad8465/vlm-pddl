@@ -1,0 +1,17 @@
+{
+  "scenario_id": "scenario_012",
+  "layout": "layout_2",
+  "task_type": "navigation",
+  "instruction_style": "novel",
+  "goal": {
+    "type": "navigation",
+    "object": null,
+    "location": "kitchen"
+  },
+  "files": {
+    "scene": "scene.png",
+    "state": "state.json",
+    "ground_truth_problem": "gt_problem.pddl",
+    "instruction": "instruction.txt"
+  }
+}

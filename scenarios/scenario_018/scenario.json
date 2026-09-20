@@ -1,0 +1,17 @@
+{
+  "scenario_id": "scenario_018",
+  "layout": "layout_2",
+  "task_type": "multi_step",
+  "instruction_style": "novel",
+  "goal": {
+    "type": "retrieval",
+    "object": "mug",
+    "location": "living_room"
+  },
+  "files": {
+    "scene": "scene.png",
+    "state": "state.json",
+    "ground_truth_problem": "gt_problem.pddl",
+    "instruction": "instruction.txt"
+  }
+}

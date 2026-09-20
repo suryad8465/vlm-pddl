@@ -1,0 +1,2 @@
+(move living_room kitchen)
+; cost = 1 (unit cost)

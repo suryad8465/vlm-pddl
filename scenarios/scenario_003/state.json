@@ -1,0 +1,57 @@
+{
+  "robot_at": "living_room",
+  "robot_position": [
+    9.0,
+    3.5,
+    0.55
+  ],
+  "locations": [
+    "kitchen",
+    "living_room"
+  ],
+  "connections": [
+    {
+      "from": "kitchen",
+      "to": "living_room"
+    },
+    {
+      "from": "living_room",
+      "to": "kitchen"
+    }
+  ],
+  "objects": [
+    {
+      "name": "table",
+      "location": "kitchen",
+      "on": null,
+      "manipulable": false,
+      "position": [
+        3.2,
+        3.5,
+        0.65
+      ]
+    },
+    {
+      "name": "mug",
+      "location": "kitchen",
+      "on": "table",
+      "manipulable": true,
+      "position": [
+        2.65,
+        3.5,
+        1.38
+      ]
+    },
+    {
+      "name": "kettle",
+      "location": "kitchen",
+      "on": "table",
+      "manipulable": true,
+      "position": [
+        3.65,
+        3.5,
+        1.45
+      ]
+    }
+  ]
+}
