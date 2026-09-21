@@ -781,92 +781,141 @@ Oracle conditions are exempt because ground-truth-derived feedback is their defi
 The executed Phase 4 exploratory study is restricted to the **labelled-image
 condition** and reuses the existing Phase 3 outputs as attempt 1.
 
-The selected cases are the 12 non-ambiguous labelled Phase 3 failures:
+Because of the available API token budget, the executed refinement study is
+restricted to **three selected semantic failure cases**, with one run per
+case-condition. The cases are selected before the refinement runs according
+to the following rule:
 
-- 4 `MISSING_FACT` failures;
-- 3 `WRONG_GOAL` failures;
-- 5 unexpected clarification failures.
+* **004** — a `MISSING_FACT` failure;
+* **006** — a `WRONG_GOAL` failure;
+* **007** — a `MISSING_FACT` failure.
+
+This selection covers both semantic failure types represented among the
+seven non-ambiguous labelled semantic failures. Scenario 004 is also used
+as the Phase 4 pilot case; this is reported explicitly and all three cases
+are treated as exploratory rather than as an independent confirmatory
+sample.
 
 The executed refinement conditions are:
 
-1. **B — self-verification**;
-2. **O1 — binary oracle feedback**;
-3. **O3 — specific-discrepancy oracle feedback**, applied to the
-   PDDL-producing semantic failures.
+1. **O1 — binary oracle feedback**;
+2. **O3 — specific-discrepancy oracle feedback**;
+3. **B — self-verification**.
 
-The five unexpected clarification cases receive B and O1 treatment only,
-because the O3 specific-discrepancy formulation is defined for an existing
-generated PDDL/task representation.
+Each selected case is run once under each of the three conditions, giving a
+maximum of:
 
-Condition A requires no new API calls for these Phase 3 failures because:
+* 3 selected cases × 3 conditions = **9 refinement runs**.
 
-- all seven semantic PDDL failures were accepted by the parser, translator,
+The five unexpected clarification cases are **not included in the Phase 4
+refinement runs**. Their treatment is outside the executed refinement scope
+because the implemented B and oracle feedback study was designed around an
+existing generated PDDL/task representation, while these cases produced
+unexpected clarification responses rather than PDDL candidates. They remain
+documented as unresolved Phase 3 failures.
+
+Condition A requires no new API calls for the seven semantic Phase 3
+failures because:
+
+* all seven semantic PDDL failures were accepted by the parser, translator,
   and planner;
-- the five unexpected clarification cases produced no parser, translator,
-  or planner error.
+* consequently, realistic deployment-time pipeline feedback detected 0/7
+  of these semantic failures.
 
-The deployable resampling baseline likewise requires no additional
-generation for cases whose existing Phase 3 candidate already passes the
-deployable pipeline checks.
+The deployable resampling baseline likewise requires no additional generation
+for cases whose existing Phase 3 candidate already passes the deployable
+pipeline checks.
 
 The following originally proposed components are not executed in this
 resource-constrained study:
 
-- O2 category-level oracle feedback;
-- pass@4;
-- additional repeated runs;
-- normal-image Phase 4 refinement;
-- no-image Phase 4 refinement.
+* O2 category-level oracle feedback;
+* pass@4;
+* additional repeated runs;
+* refinement on the other four semantic failure cases unless additional
+(.venv) surya@LAPTOP-5H00F030:~/dissertation/vlm/vlm-pddl$ sed -n '870,940p' docs/phase4_protocol.md
+9 \times 3 = 27
+$$
 
-These are treated as protocol deviations or future extensions rather than
-being presented as completed experiments.
+because each run may use up to three new refinement generation attempts
+after the reused Phase 3 attempt 1.
 
-The maximum new refinement workload is therefore:
+Condition B additionally requires a verification call for generated
+candidates that reach the verification stage. Therefore, total API calls
+and token consumption may exceed the generation-call count alone. Actual
+API usage, token consumption, rate-limit events, retries, early stopping,
+and incomplete conditions must be recorded.
 
-- 7 semantic failures × 3 conditions (B, O1, O3) = 21 refinement runs;
-- 5 unexpected clarification failures × 2 conditions (B, O1) = 10
-  refinement runs;
-- **31 Phase 4 refinement runs in total**.
+The token-budget guard remains active throughout execution. The runner must
+not silently continue after a rate-limit or token-budget failure, and
+incomplete runs must be retained and reported transparently.
 
-Each run begins from the already-existing Phase 3 attempt-1 output and may
-use up to three additional VLM calls.
+The experimental execution priority is:
+
+1. **Pilot: O1 on scenario 004**, to measure actual per-call token growth
+   under refinement history;
+2. **O1 on scenarios 006 and 007**;
+3. **O3 on scenarios 004, 006, and 007**;
+4. **B on scenarios 004, 006, and 007**;
+5. If sufficient API budget remains after the planned nine runs, additional
+   O1 runs on the four remaining semantic failures may be performed as an
+   explicitly labelled exploratory extension. They are not required for
+   completion of the primary three-case study.
+
+If API or token limits prevent completion, completed runs are retained and
+reported transparently; incomplete conditions are not represented as
+completed experiments.
 
 ---
 
 ## 22. Resource and Budget Constraint
 
-The Phase 4 design was reduced because the available API rate and token
-budget does not support the originally planned full factorial experiment
-within the available experimental period.
+The Phase 4 design was further reduced because the available API token
+budget does not support the broader 31-run refinement scope within a single
+experimental period.
 
-The executed design minimizes new API usage by reusing Phase 3 attempt 1.
+A two-call representative API test using the Phase 3 labelled-image prompt
+and scenario 004 measured **3,501 total tokens per generation call**, of
+which 3,360 were prompt tokens and 141 were completion tokens. This
+measurement is used as an empirical planning baseline rather than as a
+guaranteed fixed cost for all later calls, because refinement chains retain
+conversation history and therefore may consume progressively more input
+tokens.
 
-The maximum number of new generation calls for the planned 31 refinement
+The executed design therefore limits the new refinement study to three
+selected cases and one run per case-condition.
+
+The maximum number of new generation calls for the nine planned refinement
 runs is:
 
-\[
-31 \times 3 = 93
-\]
+$$
+9 \times 3 = 27
+$$
 
-because each run may use up to three new refinement attempts after the
-reused Phase 3 attempt 1.
+because each run may use up to three new refinement generation attempts
+after the reused Phase 3 attempt 1.
 
-Condition B additionally requires a verification call for each generated
-candidate that reaches the verification stage. Therefore, the total number
-of API calls may exceed the 93 generation-call maximum. The actual number
-of calls depends on early stopping and the number of candidates submitted
-to verification.
+Condition B additionally requires a verification call for generated
+candidates that reach the verification stage. Therefore, total API calls
+and token consumption may exceed the generation-call count alone. Actual
+API usage, token consumption, rate-limit events, retries, early stopping,
+and incomplete conditions must be recorded.
 
-Actual API usage, rate-limit events, retries, and incomplete conditions
-must be recorded.
+The token-budget guard remains active throughout execution. The runner must
+not silently continue after a rate-limit or token-budget failure, and
+incomplete runs must be retained and reported transparently.
 
-The experimental priority is:
+The experimental execution priority is:
 
-1. seven semantic labelled failures under B;
-2. seven semantic labelled failures under O1;
-3. seven semantic labelled failures under O3;
-4. five unexpected clarification cases under B;
-5. five unexpected clarification cases under O1.
+1. **Pilot: O1 on scenario 004**, to measure actual per-call token growth
+   under refinement history;
+2. **O1 on scenarios 006 and 007**;
+3. **O3 on scenarios 004, 006, and 007**;
+4. **B on scenarios 004, 006, and 007**;
+5. If sufficient API budget remains after the planned nine runs, additional
+   O1 runs on the four remaining semantic failures may be performed as an
+   explicitly labelled exploratory extension. They are not required for
+   completion of the primary three-case study.
 
 If API or token limits prevent completion, completed runs are retained and
 reported transparently; incomplete conditions are not represented as
@@ -878,43 +927,61 @@ completed experiments.
 
 The originally specified Phase 4 protocol included:
 
-- three repeated runs per scenario-condition;
-- independent four-attempt resampling;
-- pass@4;
-- oracle feedback levels O1, O2, and O3;
-- refinement across the broader image conditions.
+* three repeated runs per scenario-condition;
+* independent four-attempt resampling;
+* pass@4;
+* oracle feedback levels O1, O2, and O3;
+* refinement across the broader image conditions;
+* refinement of the full set of selected Phase 3 failures.
 
 The full design was not executed because of available API rate and token
 constraints and the limited experimental period.
 
 The executed exploratory study therefore:
 
-- reuses the existing Phase 3 labelled output as attempt 1;
-- uses one run per selected scenario-condition;
-- focuses on the 12 non-ambiguous labelled Phase 3 failures;
-- evaluates self-verification (B);
-- evaluates binary oracle feedback (O1);
-- evaluates specific-discrepancy oracle feedback (O3) for PDDL-producing
-  semantic failures;
-- omits O2 and pass@4;
-- does not perform additional independent repeats;
-- does not regenerate Phase 3 attempt 1;
-- does not perform additional Phase 4 refinement in the normal-image or
-  no-image conditions.
+* reuses the existing Phase 3 labelled output as attempt 1;
+* uses one run per selected scenario-condition;
+* restricts the primary refinement study to scenarios **004, 006, and
+  007**;
+* includes both `MISSING_FACT` and `WRONG_GOAL` semantic failure types;
+* evaluates binary oracle feedback (O1);
+* evaluates specific-discrepancy oracle feedback (O3);
+* evaluates self-verification (B);
+* omits O2 and pass@4;
+* does not perform additional independent repeats;
+* does not regenerate Phase 3 attempt 1;
+* does not perform additional Phase 4 refinement in the normal-image or
+  no-image conditions;
+* excludes the five unexpected clarification failures from the executed
+  refinement study.
 
-These deviations were made before the Phase 4 refinement runs and are
-reported explicitly rather than being presented as part of the original
-full design.
+Scenario 004 is used as the pilot case. Its pilot status is disclosed in
+the reporting, and the three selected cases are treated as an exploratory
+case study rather than as a statistically representative sample.
 
 The seven labelled semantic failures provide an offline result for
 Condition A: all seven passed the deployable parser, translator, and
-planner pipeline, so realistic pipeline feedback detected 0/7 of these
-semantic failures.
+planner pipeline, so realistic pipeline feedback detected **0/7** of these
+semantic failures. This result uses the complete set of seven semantic
+labelled failures and does not depend on the three-case Phase 4 sample.
 
 The five unexpected clarification failures likewise produced no parser,
-translator, or planner error signal.
+translator, or planner error signal and are not included in the executed
+refinement study.
 
-The Phase 4 results are therefore interpreted as an exploratory case-based
-refinement analysis rather than a statistically powered comparison.
+The selection of Phase 4 cases from observed Phase 3 failures introduces
+selection bias: the cases were selected because they had already exhibited
+failure, and the resulting refinement outcomes cannot be interpreted as an
+estimate of general refinement success on new or randomly selected tasks.
 
----
+Accordingly, the three-case Phase 4 results are reported as an **exploratory
+case study of the refinement mechanism**. Results are presented per chain,
+including feedback received, model changes, number of attempts, API usage,
+and whether the resulting candidate passed the relevant evaluation
+procedure. No success rates, confidence intervals, p-values, statistical
+significance tests, or claims that refinement improves overall task success
+are reported from the three-case sample.
+
+The principal quantitative observation concerning realistic deployment-time
+feedback remains the offline finding that it detected **0/7** of the seven
+semantic labelled Phase 3 failures.
