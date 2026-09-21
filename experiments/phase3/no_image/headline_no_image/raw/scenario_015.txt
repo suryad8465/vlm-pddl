@@ -1,0 +1,3 @@
+STATUS: CLARIFICATION_REQUIRED
+
+The instruction uses the term "lounge," which is not a defined location in the permitted vocabulary (kitchen, living_room, bedroom, bathroom), and the image does not provide sufficient information to unambiguously map "lounge" to one of the available locations.

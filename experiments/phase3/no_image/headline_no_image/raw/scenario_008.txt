@@ -1,0 +1,3 @@
+STATUS: CLARIFICATION_REQUIRED
+
+The destination "over there" is ambiguous and cannot be determined from the instruction or the image.
