@@ -1,0 +1,3 @@
+STATUS: CLARIFICATION_REQUIRED
+
+The image does not show a mug, so its initial location cannot be determined.

@@ -1,0 +1,3 @@
+STATUS: CLARIFICATION_REQUIRED
+
+The instruction requests to "collect the cup," but the image does not clearly show a cup in the kitchen (the cooking area). The visible objects are a brown box-like item in the kitchen and a blue box-like item in the living room. Without a clear visual representation of a cup, the task cannot be unambiguously translated.

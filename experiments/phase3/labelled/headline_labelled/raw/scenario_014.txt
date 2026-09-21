@@ -1,0 +1,3 @@
+STATUS: CLARIFICATION_REQUIRED
+
+The instruction "Bring the mug over there" uses the deictic phrase "over there," which does not specify a destination. The image shows two rooms (kitchen and living_room) but does not provide enough information to determine which one is the intended destination.

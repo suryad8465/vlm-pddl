@@ -1,0 +1,3 @@
+STATUS: CLARIFICATION_REQUIRED
+
+The instruction "Bring the mug over there" is ambiguous because "over there" does not specify a destination, and the image does not provide enough information to determine where the user wants the mug to be brought.

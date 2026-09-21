@@ -1,0 +1,3 @@
+STATUS: CLARIFICATION_REQUIRED
+
+The image does not contain a "cup" or a "table" (or any surface) to support the instruction to "collect the cup". The visible objects (a blue box and a brown box) do not match the requested object, and the instruction cannot be fulfilled without inventing entities not present in the scene.

@@ -1,0 +1,7 @@
+Checking plan: experiments/phase3/labelled/headline_labelled/plans/scenario_013.plan
+
+Plan failed to execute
+
+
+Failed plans:
+ experiments/phase3/labelled/headline_labelled/plans/scenario_013.plan 

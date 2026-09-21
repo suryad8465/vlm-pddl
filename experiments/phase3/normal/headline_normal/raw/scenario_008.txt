@@ -1,0 +1,3 @@
+STATUS: CLARIFICATION_REQUIRED
+
+The instruction "bring it over there" is ambiguous because the destination is not specified in the text, and the image does not provide enough information to determine which location or object is meant by "over there."

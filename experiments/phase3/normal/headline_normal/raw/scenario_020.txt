@@ -1,0 +1,2 @@
+STATUS: CLARIFICATION_REQUIRED
+The instruction "Go over there" is ambiguous and does not specify a destination, nor does the image provide enough information to determine which location is intended.

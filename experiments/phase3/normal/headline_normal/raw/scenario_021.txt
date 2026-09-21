@@ -1,0 +1,3 @@
+STATUS: CLARIFICATION_REQUIRED
+
+The instruction "Head into the cooking area" is ambiguous because the image does not provide enough information to determine which specific location corresponds to the "cooking area" or where the robot is currently located.

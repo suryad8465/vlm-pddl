@@ -1,0 +1,3 @@
+STATUS: CLARIFICATION_REQUIRED
+
+The image does not contain a mug, which is the object specified in the instruction.

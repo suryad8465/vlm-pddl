@@ -1,0 +1,3 @@
+STATUS: CLARIFICATION_REQUIRED
+
+The instruction "Head into the cooking area" does not specify the robot's current location, and the image does not provide enough information to determine where the robot is currently positioned.

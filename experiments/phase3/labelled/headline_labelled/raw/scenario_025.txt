@@ -1,0 +1,3 @@
+STATUS: CLARIFICATION_REQUIRED
+
+The image does not show a "mug" in the kitchen (or anywhere else), so the object to be picked up cannot be identified.

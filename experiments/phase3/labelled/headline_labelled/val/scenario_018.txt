@@ -1,0 +1,5 @@
+Checking plan: experiments/phase3/labelled/headline_labelled/plans/scenario_018.plan
+
+Errors: 0, warnings: 1
+Error: Error in type-checking!
+

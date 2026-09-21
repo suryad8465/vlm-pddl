@@ -1,0 +1,23 @@
+(define (problem move_cup_to_living_room)
+  (:domain household)
+
+  (:objects
+    kitchen living_room - location
+    table cup - object
+  )
+
+  (:init
+    (robot-at kitchen)
+    (connected kitchen living_room)
+    (connected living_room kitchen)
+
+    (located table kitchen)
+    (located cup kitchen)
+    (on cup table)
+    (manipulable cup)
+  )
+
+  (:goal
+    (located cup living_room)
+  )
+)

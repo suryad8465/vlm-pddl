@@ -1,0 +1,3 @@
+STATUS: CLARIFICATION_REQUIRED
+
+The image does not contain a mug, so the source location of the object cannot be determined.

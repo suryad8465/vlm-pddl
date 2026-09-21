@@ -1,0 +1,3 @@
+STATUS: CLARIFICATION_REQUIRED
+
+The image does not contain a mug, nor does it clearly identify the rooms as a kitchen and a living room, making it impossible to map the instruction to the scene.
