@@ -1,0 +1,3 @@
+STATUS: CLARIFICATION_REQUIRED
+
+The image does not show the physical scene, so the initial location of the robot, the location of the mug, and the connectivity between the kitchen and living room cannot be determined.

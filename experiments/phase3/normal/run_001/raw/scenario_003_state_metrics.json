@@ -1,0 +1,139 @@
+{
+  "scenario_id": "scenario_003",
+  "scoreable": true,
+  "reason": null,
+  "observability_classes": {
+    "robot-at": "VISUAL_PLUS_SEMANTIC",
+    "connected": "VISUAL_PLUS_SEMANTIC",
+    "located": "VISUAL_PLUS_SEMANTIC",
+    "on": "DIRECT_VISUAL",
+    "holding": "VISUAL_PLUS_SEMANTIC",
+    "manipulable": "SEMANTIC_DOMAIN"
+  },
+  "predicted_status": "PDDL",
+  "expected_status": "PDDL",
+  "state_exact_match": true,
+  "goal_exact_match": true,
+  "initial_state": {
+    "tp": 10,
+    "fp": 0,
+    "fn": 0,
+    "precision": 1.0,
+    "recall": 1.0,
+    "f1": 1.0
+  },
+  "goal": {
+    "tp": 1,
+    "fp": 0,
+    "fn": 0,
+    "precision": 1.0,
+    "recall": 1.0,
+    "f1": 1.0
+  },
+  "per_predicate": {
+    "robot-at": {
+      "tp": 1,
+      "fp": 0,
+      "fn": 0,
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1": 1.0,
+      "observability": "VISUAL_PLUS_SEMANTIC",
+      "gt_count": 1,
+      "predicted_count": 1
+    },
+    "connected": {
+      "tp": 2,
+      "fp": 0,
+      "fn": 0,
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1": 1.0,
+      "observability": "VISUAL_PLUS_SEMANTIC",
+      "gt_count": 2,
+      "predicted_count": 2
+    },
+    "located": {
+      "tp": 3,
+      "fp": 0,
+      "fn": 0,
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1": 1.0,
+      "observability": "VISUAL_PLUS_SEMANTIC",
+      "gt_count": 3,
+      "predicted_count": 3
+    },
+    "on": {
+      "tp": 2,
+      "fp": 0,
+      "fn": 0,
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1": 1.0,
+      "observability": "DIRECT_VISUAL",
+      "gt_count": 2,
+      "predicted_count": 2
+    },
+    "holding": {
+      "tp": 0,
+      "fp": 0,
+      "fn": 0,
+      "precision": null,
+      "recall": null,
+      "f1": null,
+      "observability": "VISUAL_PLUS_SEMANTIC",
+      "gt_count": 0,
+      "predicted_count": 0
+    },
+    "manipulable": {
+      "tp": 2,
+      "fp": 0,
+      "fn": 0,
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1": 1.0,
+      "observability": "SEMANTIC_DOMAIN",
+      "gt_count": 2,
+      "predicted_count": 2
+    }
+  },
+  "by_observability": {
+    "VISUAL_PLUS_SEMANTIC": {
+      "tp": 6,
+      "fp": 0,
+      "fn": 0,
+      "predicates": [
+        "robot-at",
+        "connected",
+        "located",
+        "holding"
+      ],
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1": 1.0
+    },
+    "DIRECT_VISUAL": {
+      "tp": 2,
+      "fp": 0,
+      "fn": 0,
+      "predicates": [
+        "on"
+      ],
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1": 1.0
+    },
+    "SEMANTIC_DOMAIN": {
+      "tp": 2,
+      "fp": 0,
+      "fn": 0,
+      "predicates": [
+        "manipulable"
+      ],
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1": 1.0
+    }
+  }
+}

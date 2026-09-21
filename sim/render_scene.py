@@ -66,7 +66,7 @@ def cylinder(position, radius, height, color):
     )
 
 
-def render_scene(state: SceneState, output_path: str = "scene.png") -> None:
+def render_scene(state: SceneState, output_path: str = "scene.png",label_rooms: bool = False,) -> None:
     """Render a SceneState using the established Phase 1 house geometry."""
 
     p.connect(p.DIRECT)
@@ -180,6 +180,28 @@ def render_scene(state: SceneState, output_path: str = "scene.png") -> None:
         size=(0.9, 0.9, 1.1),
         color=ROBOT,
     )
+    # Optional semantic room labels for Phase 3 labelled-image condition.
+    # Labels identify room names only; they do not reveal object or robot state.
+    if label_rooms:
+        text_objects = []
+
+        room_label_positions = {
+            "kitchen": (3.0, 3.5, 0.08),
+            "living_room": (9.0, 3.5, 0.08),
+        }
+
+        for location in state.locations:
+            if location not in room_label_positions:
+                continue
+
+            text_id = p.addUserDebugText(
+                location,
+                room_label_positions[location],
+                textColorRGB=[0, 0, 0],
+                textSize=1.5,
+                lifeTime=0,
+            )
+            text_objects.append(text_id)
 
     # Top-down camera
     view_matrix = p.computeViewMatrix(
@@ -203,7 +225,40 @@ def render_scene(state: SceneState, output_path: str = "scene.png") -> None:
         renderer=p.ER_TINY_RENDERER,
     )
 
-    image = Image.fromarray(np.asarray(rgba, dtype=np.uint8).reshape(height, width, 4), "RGBA")
-    image.save(output_path)
+    image = Image.fromarray(
+        np.asarray(rgba, dtype=np.uint8).reshape(height, width, 4),
+        "RGBA",
+    )
 
+    if label_rooms:
+        from PIL import ImageDraw, ImageFont
+
+        draw = ImageDraw.Draw(image)
+
+        try:
+            font = ImageFont.truetype(
+                "/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf",
+                32,
+            )
+        except OSError:
+            font = ImageFont.load_default()
+
+        # Approximate projected centres of the two rooms in the
+        # existing top-down camera view.
+        labels = {
+            "kitchen": (370, 250),
+            "living_room": (650, 250),
+        }
+
+        for location in state.locations:
+            if location in labels:
+                x, y = labels[location]
+                draw.text(
+                    (x, y),
+                    location,
+                    fill=(0, 0, 0, 255),
+                    font=font,
+                )
+
+    image.save(output_path)
     p.disconnect()

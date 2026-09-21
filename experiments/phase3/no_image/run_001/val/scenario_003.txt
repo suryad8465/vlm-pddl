@@ -1,0 +1,9 @@
+Checking plan: experiments/phase3/no_image/plans/scenario_003.plan
+Plan executed successfully - checking goal
+Plan valid
+Final value: 1 
+
+Successful plans:
+Value: 1
+ experiments/phase3/no_image/plans/scenario_003.plan 1 
+

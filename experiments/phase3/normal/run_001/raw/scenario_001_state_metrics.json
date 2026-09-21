@@ -1,0 +1,15 @@
+{
+  "scenario_id": "scenario_001",
+  "scoreable": false,
+  "reason": "current VLM status is CLARIFICATION_REQUIRED; predicted PDDL is not scoreable",
+  "observability_classes": {
+    "robot-at": "VISUAL_PLUS_SEMANTIC",
+    "connected": "VISUAL_PLUS_SEMANTIC",
+    "located": "VISUAL_PLUS_SEMANTIC",
+    "on": "DIRECT_VISUAL",
+    "holding": "VISUAL_PLUS_SEMANTIC",
+    "manipulable": "SEMANTIC_DOMAIN"
+  },
+  "predicted_status": "CLARIFICATION_REQUIRED",
+  "expected_status": "PDDL"
+}
