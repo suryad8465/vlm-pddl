@@ -1,0 +1,4 @@
+condition,n_ambiguous,correct_clarification,clarification_rate,task_success_rate
+normal,9,9,1.0000,1.0000
+labelled,9,9,1.0000,1.0000
+no_image,9,9,1.0000,1.0000

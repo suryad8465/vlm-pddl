@@ -1,0 +1,4 @@
+population,n_scenarios,condition_a,condition_b,both_fail,a_fail_b_success,a_success_b_fail,both_success,exact_mcnemar_p,bonferroni_adjusted_p
+non_ambiguous,18,normal,labelled,12,6,0,0,0.0312,0.0938
+non_ambiguous,18,normal,no_image,15,3,0,0,0.2500,0.7500
+non_ambiguous,18,labelled,no_image,12,0,3,3,0.2500,0.7500
