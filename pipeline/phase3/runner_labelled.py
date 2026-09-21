@@ -451,12 +451,12 @@ def main():
         )
 
         raise SystemExit(1)
-        parsed = parse_response(raw_response)
-        empty_response = not raw_response.strip()
 
-        raw_file = raw_dir / f"{scenario_id}.txt"
+    parsed = parse_response(raw_response)
+    empty_response = not raw_response.strip()
 
     raw_file = raw_dir / f"{scenario_id}.txt"
+
     raw_file.write_text(raw_response)
 
     pddl_file = None
