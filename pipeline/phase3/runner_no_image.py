@@ -203,7 +203,6 @@ def expected_status(metadata: dict) -> str:
 
 
 def query_vlm(
-    image_path: Path,
     domain_text: str,
     instruction: str,
 ) -> tuple[str, float]:
