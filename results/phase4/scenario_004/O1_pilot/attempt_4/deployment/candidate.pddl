@@ -1,0 +1,22 @@
+(define (problem bring_mug_to_living_room)
+  (:domain household)
+
+  (:objects
+    kitchen living_room - location
+    table - surface
+  )
+
+  (:init
+    (at kitchen)
+    (connected kitchen living_room)
+    (connected living_room kitchen)
+    (at-location table kitchen)
+    (on mug table)
+    (pickable mug)
+  )
+
+  (:goal
+    (carrying mug)
+    (at living_room)
+  )
+)

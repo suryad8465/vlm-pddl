@@ -1,0 +1,13 @@
+{
+  "scenario_id": "scenario_023",
+  "scoreable": false,
+  "reason": "missing Phase 3 result metadata: /home/surya/dissertation/vlm/vlm-pddl/experiments/phase3/raw/scenario_023.result.json",
+  "observability_classes": {
+    "robot-at": "VISUAL_PLUS_SEMANTIC",
+    "connected": "VISUAL_PLUS_SEMANTIC",
+    "located": "VISUAL_PLUS_SEMANTIC",
+    "on": "DIRECT_VISUAL",
+    "holding": "VISUAL_PLUS_SEMANTIC",
+    "manipulable": "SEMANTIC_DOMAIN"
+  }
+}
