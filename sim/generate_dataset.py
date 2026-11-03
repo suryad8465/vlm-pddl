@@ -1,3 +1,12 @@
+"""Dataset generation entry point.
+
+Iterates over all combinations of 3 layouts × 3 task types × 3 instruction
+styles (27 total) and calls ``create_scenario`` for each, producing a
+sequentially numbered ``scenario_NNN/`` directory tree under ``scenarios/``.
+
+Run directly as a script to (re-)generate the full dataset.
+"""
+
 from sim.scenario import create_scenario
 from sim.state import (
     baseline_state,
@@ -26,10 +35,23 @@ INSTRUCTION_STYLES = (
 
 
 def scenario_id(number: int) -> str:
+    """Return a zero-padded scenario identifier string.
+
+    Args:
+        number: Sequential scenario number starting from 1.
+
+    Returns:
+        A string like "scenario_003".
+    """
     return f"scenario_{number:03d}"
 
 
 def main() -> None:
+    """Generate the full dataset of 27 scenarios.
+
+    Iterates over all 3 layouts × 3 task types × 3 instruction styles,
+    assigning default goal configurations and calling create_scenario for each.
+    """
     number = 1
 
     for layout_name, state_factory in LAYOUTS.items():

@@ -1,3 +1,11 @@
+"""Phase 3 evaluation runner (normal unlabelled image condition).
+
+Queries the VLM with the unlabelled scene image and instruction, parses the
+STATUS response, optionally solves the generated PDDL using Fast Downward,
+validates any found plan against the ground-truth problem using VAL, and saves
+comprehensive run metadata and artifacts to ``experiments/phase3/normal/<run_id>/``.
+"""
+
 import argparse
 import base64
 import json
@@ -31,6 +39,18 @@ def run_val(
     plan: Path,
     val_output_file: Path,
 ) -> dict:
+    """Validate an execution plan against the ground-truth problem using VAL.
+
+    Args:
+        domain: Path to the PDDL domain file.
+        ground_truth_problem: Path to the scenario's ground-truth PDDL problem.
+        plan: Path to the generated SAS plan file to validate.
+        val_output_file: Path where the raw stdout/stderr of VAL will be written.
+
+    Returns:
+        A dict containing val_valid (bool), val_timeout (bool), val_returncode,
+        val_output (str), and val_latency_seconds (float).
+    """
 
     start = time.perf_counter()
 
@@ -77,6 +97,14 @@ def run_val(
     }
 
 def encode_image(path: Path) -> str:
+    """Base64-encode an image file and return the decoded ASCII string.
+
+    Args:
+        path: Path to the image file.
+
+    Returns:
+        Base64-encoded string representation of the image.
+    """
     with path.open("rb") as image_file:
         return base64.b64encode(
             image_file.read()
@@ -84,10 +112,13 @@ def encode_image(path: Path) -> str:
 
 
 def clean_response(text: str) -> str:
-    """
-    Remove common reasoning/formatting wrappers before parsing.
+    """Remove common reasoning tags (<think>...</think>) and code fences before parsing.
 
-    The original raw response is always saved separately.
+    Args:
+        text: Raw response string from the VLM.
+
+    Returns:
+        Cleaned response text.
     """
 
     text = text.strip()
@@ -114,8 +145,17 @@ def clean_response(text: str) -> str:
 
 
 def parse_response(text: str) -> dict:
-    """
-    Parse STATUS from the cleaned VLM response.
+    """Parse STATUS from the cleaned VLM response.
+
+    Extracts either STATUS: PDDL (with accompanying PDDL problem body) or
+    STATUS: CLARIFICATION_REQUIRED (with reason message).
+
+    Args:
+        text: Response text from the VLM.
+
+    Returns:
+        A dict with status ("PDDL", "CLARIFICATION_REQUIRED", or "PARSE_ERROR"),
+        pddl (str or None), reason (str or None), and cleaned_response (str).
     """
 
     cleaned = clean_response(text)
@@ -163,6 +203,17 @@ def parse_response(text: str) -> dict:
 
 
 def load_scenario(scenario_id: str) -> dict:
+    """Load scenario metadata, instruction text, and scene image path.
+
+    Args:
+        scenario_id: Scenario identifier, e.g. "scenario_001".
+
+    Returns:
+        Dict containing scenario_dir, metadata, instruction, and image path.
+
+    Raises:
+        FileNotFoundError: If the scenario directory does not exist.
+    """
     scenario_dir = Path("scenarios") / scenario_id
 
     if not scenario_dir.exists():
@@ -188,12 +239,17 @@ def load_scenario(scenario_id: str) -> dict:
 
 
 def expected_status(metadata: dict) -> str:
-    """
-    Phase 3 ambiguity policy:
+    """Determine expected status under the Phase 3 ambiguity policy.
 
     precise -> PDDL
     novel   -> PDDL
     ambiguous -> CLARIFICATION_REQUIRED
+
+    Args:
+        metadata: Scenario metadata dict containing "instruction_style".
+
+    Returns:
+        "CLARIFICATION_REQUIRED" if style is ambiguous, otherwise "PDDL".
     """
 
     if metadata["instruction_style"] == "ambiguous":
@@ -207,6 +263,19 @@ def query_vlm(
     domain_text: str,
     instruction: str,
 ) -> tuple[str, float]:
+    """Query the VLM with an image and task prompt.
+
+    Args:
+        image_path: Path to the scene image.
+        domain_text: String content of the household PDDL domain.
+        instruction: Natural-language task instruction.
+
+    Returns:
+        A tuple of (raw_output_text, latency_seconds).
+
+    Raises:
+        RuntimeError: If the VLM response contains no content.
+    """
 
     image_data = encode_image(image_path)
 
@@ -261,6 +330,21 @@ def run_planner(
     problem: Path,
     plan_output: Path,
 ) -> dict:
+    """Run Fast Downward to find an optimal plan for the predicted problem.
+
+    Executes A* search with lmcut heuristic, writes the plan to ``plan_output``
+    if found, and extracts solvability and cost metrics.
+
+    Args:
+        domain: Path to the household domain PDDL file.
+        problem: Path to the predicted problem PDDL file.
+        plan_output: Destination path to write the SAS plan.
+
+    Returns:
+        A dict containing planner_solvable (bool), planner_timeout (bool),
+        planner_returncode, planner_output, planner_latency_seconds, plan_length,
+        and plan_cost.
+    """
 
     start = time.perf_counter()
 
@@ -335,6 +419,11 @@ def run_planner(
 
 
 def main():
+    """CLI entry point for Phase 3 normal-condition evaluation.
+
+    Parses scenario_id and run_id flags, runs the evaluation pipeline, solves and
+    validates plans when PDDL is produced, and writes results to the experiment dir.
+    """
     parser = argparse.ArgumentParser(
         description="Run one Phase 3 VLM evaluation."
     )

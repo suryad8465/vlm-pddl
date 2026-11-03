@@ -1,14 +1,8 @@
-"""
-Simple PyBullet top-down floor-plan render.
+"""Simple PyBullet top-down floor-plan renderer (Phase 1 prototype).
 
-Semantic components:
-    Kitchen
-    Living room
-    Table
-    Mug
-    Kettle
-    Robot
-
+Builds a static household scene containing a kitchen, living room, table,
+mug, kettle, and robot, and renders a top-down camera view to
+``household_floorplan.png``.
 """
 
 import pybullet as p
@@ -21,6 +15,16 @@ from PIL import Image
 # ============================================================
 
 def box(position, size, color):
+    """Create a static PyBullet box body and return its multibody ID.
+
+    Args:
+        position: (x, y, z) centre coordinate tuple.
+        size: (sx, sy, sz) box dimensions in metres.
+        color: RGBA colour list.
+
+    Returns:
+        The multibody ID of the created box.
+    """
     sx, sy, sz = size
 
     collision = p.createCollisionShape(
@@ -43,6 +47,17 @@ def box(position, size, color):
 
 
 def cylinder(position, radius, height, color):
+    """Create a static PyBullet cylinder body and return its multibody ID.
+
+    Args:
+        position: (x, y, z) centre coordinate tuple.
+        radius: Cylinder radius in metres.
+        height: Cylinder length/height along z-axis in metres.
+        color: RGBA colour list.
+
+    Returns:
+        The multibody ID of the created cylinder.
+    """
     collision = p.createCollisionShape(
         p.GEOM_CYLINDER,
         radius=radius,

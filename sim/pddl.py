@@ -1,3 +1,10 @@
+"""PDDL problem generator for the household domain.
+
+Builds syntactically valid PDDL problem strings from a SceneState and a goal
+specification, and writes them to disk. The generated problems serve as
+ground truth for planner validation and VLM evaluation.
+"""
+
 from pathlib import Path
 
 from sim.state import SceneState
@@ -13,6 +20,27 @@ def ground_truth_problem(
     goal_type: str = "retrieval",
     problem_name: str = "ground_truth",
 ) -> str:
+    """Build and return a complete PDDL problem string for the given scene and goal.
+
+    Encodes the full :objects, :init, and :goal sections using only facts
+    supported by ``state``. For retrieval goals the :goal asserts
+    ``(located <object> <location>)``; for navigation goals it asserts
+    ``(robot-at <location>)``.
+
+    Args:
+        state: The scene state encoding locations, connections, and objects.
+        goal_location: Target location identifier for the goal.
+        goal_object: Object to relocate (required for retrieval goals).
+        goal_type: Either "retrieval" or "navigation".
+        problem_name: PDDL problem name string embedded in the output.
+
+    Returns:
+        A complete PDDL problem as a newline-terminated string.
+
+    Raises:
+        ValueError: If goal_location or goal_object are not in the state, or
+            if goal_type is unrecognised.
+    """
     object_names = [obj.name for obj in state.objects]
 
     if goal_location not in state.locations:
@@ -99,6 +127,18 @@ def save_ground_truth_problem(
     goal_type: str = "retrieval",
     problem_name: str = "ground_truth",
 ) -> None:
+    """Generate a ground-truth PDDL problem and write it to disk.
+
+    Creates parent directories if they do not exist.
+
+    Args:
+        state: The scene state to encode.
+        path: Destination ``.pddl`` file path.
+        goal_location: Target location identifier.
+        goal_object: Object to relocate (required for retrieval goals).
+        goal_type: Either "retrieval" or "navigation".
+        problem_name: PDDL problem name embedded in the file.
+    """
     path = Path(path)
 
     path.parent.mkdir(

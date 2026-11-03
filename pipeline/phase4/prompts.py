@@ -1,3 +1,9 @@
+"""Phase 4 iterative refinement prompt construction.
+
+Builds OpenAI-format chat messages incorporating the scene image, user instruction,
+previous PDDL candidate, and deployment or oracle feedback.
+"""
+
 import base64
 from pathlib import Path
 
@@ -9,11 +15,20 @@ def build_refinement_messages(
     previous_pddl: str,
     feedback: str,
 ) -> list:
-    """Build a Phase 4 refinement request.
+    """Build a Phase 4 refinement request message payload.
 
     The model receives the scene image, original instruction, its previous
     PDDL candidate, and deployment-time feedback. Ground truth is never
     included.
+
+    Args:
+        image_path: Path to the scene image file.
+        instruction: Natural-language task instruction string.
+        previous_pddl: Previously generated PDDL problem string.
+        feedback: Feedback message string describing issues with previous candidate.
+
+    Returns:
+        List of message dicts formatted for OpenAI chat completion requests.
     """
     with image_path.open("rb") as image_file:
         image_b64 = base64.b64encode(image_file.read()).decode("utf-8")

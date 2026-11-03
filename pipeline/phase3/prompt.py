@@ -1,4 +1,23 @@
+"""Phase 3 prompt construction module.
+
+Builds the standardized visual-to-PDDL translation prompt with an explicit
+ambiguity policy, identifier vocabulary, predicate semantics, and response format.
+"""
+
+
 def build_phase3_prompt(domain_text: str, instruction: str) -> str:
+    """Build the comprehensive Phase 3 visual-to-PDDL prompt.
+
+    Embeds domain PDDL, candidate vocabulary, predicate semantics, instruction,
+    and the ambiguity policy (STATUS: PDDL vs STATUS: CLARIFICATION_REQUIRED).
+
+    Args:
+        domain_text: Fixed household PDDL domain definition string.
+        instruction: Natural-language task instruction string.
+
+    Returns:
+        Formatted prompt string for the VLM.
+    """
     return f"""
 You are a strict visual-to-PDDL translator for a household robot.
 

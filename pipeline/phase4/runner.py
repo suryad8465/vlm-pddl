@@ -1,3 +1,10 @@
+"""Phase 4 iterative refinement runner (pilot: scenario_004 with O1 oracle feedback).
+
+Implements an iterative refinement loop of up to 4 attempts. Attempt 1 reuses
+the frozen Phase 3 candidate; subsequent attempts incorporate oracle failure feedback
+via prompt refinement. Supports resumable execution via an append-only JSONL attempt log.
+"""
+
 import argparse
 import json
 from datetime import datetime, timezone
@@ -36,6 +43,17 @@ O1_FEEDBACK = (
 )
 
 def load_scenario(scenario_id: str) -> dict:
+    """Load scenario metadata, instruction text, and labelled scene image path.
+
+    Args:
+        scenario_id: Scenario identifier, e.g. "scenario_004".
+
+    Returns:
+        Dict containing loaded scenario metadata and paths.
+
+    Raises:
+        FileNotFoundError: If scenario folder or required artifact files are missing.
+    """
     scenario_dir = Path("scenarios") / scenario_id
 
     if not scenario_dir.exists():
@@ -77,6 +95,14 @@ def load_scenario(scenario_id: str) -> dict:
 
 
 def expected_status(metadata: dict) -> str:
+    """Determine expected status from scenario metadata instruction style.
+
+    Args:
+        metadata: Scenario metadata dict containing "instruction_style".
+
+    Returns:
+        "CLARIFICATION_REQUIRED" if instruction style is ambiguous, else "PDDL".
+    """
     if metadata["instruction_style"] == "ambiguous":
         return "CLARIFICATION_REQUIRED"
 
@@ -88,7 +114,12 @@ def append_attempt_log(
     output_dir: Path,
     attempt_result: dict,
 ) -> None:
-    """Append one completed attempt to the Phase 4 JSONL log."""
+    """Append one completed attempt record to the Phase 4 attempts.jsonl log.
+
+    Args:
+        output_dir: Output experiment run directory path.
+        attempt_result: Result dictionary for the completed attempt.
+    """
 
     log_file = output_dir / "attempts.jsonl"
 
@@ -106,7 +137,17 @@ def load_completed_attempts(
     *,
     output_dir: Path,
 ) -> dict[int, dict]:
-    """Load completed attempts from the append-only JSONL log."""
+    """Load completed attempts from the append-only JSONL log for resumability.
+
+    Args:
+        output_dir: Output experiment run directory path containing attempts.jsonl.
+
+    Returns:
+        Mapping of attempt number (int) to completed attempt result dictionary.
+
+    Raises:
+        ValueError: If corrupted or invalid JSON lines are encountered.
+    """
 
     log_file = output_dir / "attempts.jsonl"
 
@@ -149,7 +190,22 @@ def evaluate_attempt(
     api_record: dict,
     attempt_source: str,
 ) -> tuple[dict, int]:
-    """Parse and evaluate one Phase 4 VLM response."""
+    """Parse, evaluate, and persist one Phase 4 VLM response candidate.
+
+    Runs deployment-time planning checks if PDDL was generated, saves the raw
+    output and result JSON, appends to the attempt log, and tracks token usage.
+
+    Args:
+        scenario: Loaded scenario metadata dict.
+        output_dir: Output experiment run directory path.
+        attempt: Attempt sequence number (1-4).
+        raw_response: Raw response string from the model.
+        api_record: Usage and latency record from the API call.
+        attempt_source: Label indicating source ("frozen_phase3" or "phase4_refinement").
+
+    Returns:
+        A tuple of (attempt_result_dict, total_tokens_used_int).
+    """
 
     parsed = parse_response(raw_response)
 
@@ -239,7 +295,20 @@ def run_attempt_1(
     output_dir: Path,
     token_budget_used: int,
 ) -> tuple[dict, int]:
-    """Run Phase 3 generation unchanged as Phase 4 attempt 1."""
+    """Execute Phase 4 attempt 1 by reusing the frozen Phase 3 candidate.
+
+    Args:
+        scenario: Loaded scenario metadata dict.
+        output_dir: Output experiment directory path.
+        token_budget_used: Accumulated token usage prior to this attempt.
+
+    Returns:
+        A tuple of (attempt_result_dict, updated_token_budget_used).
+
+    Raises:
+        ValueError: If run on scenarios other than scenario_004 in pilot mode.
+        FileNotFoundError: If the frozen Phase 3 response file does not exist.
+    """
 
     scenario_id = scenario["scenario_id"]
     instruction = scenario["instruction"]
@@ -384,7 +453,24 @@ def run_refinement_attempt(
     previous_result: dict,
     token_budget_used: int,
 ) -> tuple[dict, int]:
-    """Run one O1 refinement attempt."""
+    """Execute one iterative refinement attempt using O1 feedback.
+
+    Builds refinement messages including previous candidate and O1 feedback,
+    queries the VLM, and evaluates the new candidate.
+
+    Args:
+        scenario: Loaded scenario metadata dict.
+        output_dir: Output experiment directory path.
+        attempt: Attempt sequence index (2-4).
+        previous_result: Result dict from the immediately preceding attempt.
+        token_budget_used: Accumulated token usage prior to this attempt.
+
+    Returns:
+        A tuple of (attempt_result_dict, updated_token_budget_used).
+
+    Raises:
+        RuntimeError: If previous attempt did not produce a PDDL candidate.
+    """
 
     previous_pddl_path = previous_result.get(
         "predicted_pddl"
@@ -451,6 +537,12 @@ def run_refinement_attempt(
     )
 
 def main() -> None:
+    """CLI entry point for Phase 4 iterative refinement runner.
+
+    Executes attempt 1 (frozen Phase 3 response), computes the O1 decision,
+    runs subsequent refinement attempts (2 through 4) if needed, and logs
+    all progress to `attempts.jsonl` with resume capability.
+    """
     parser = argparse.ArgumentParser(
         description="Phase 4 iterative VLM/PDDL runner."
     )

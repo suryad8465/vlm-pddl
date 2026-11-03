@@ -1,3 +1,11 @@
+"""PDDL state and goal fact evaluation module.
+
+Parses predicted and ground-truth PDDL problems, extracts facts from the
+:init and :goal sections, and evaluates precision, recall, and F1 metrics:
+overall, per-predicate, and aggregated by observability class
+(VISUAL_PLUS_SEMANTIC, DIRECT_VISUAL, SEMANTIC_DOMAIN).
+"""
+
 from __future__ import annotations
 
 import json
@@ -26,7 +34,18 @@ OBSERVABILITY = {
 
 
 def extract_section(text: str, section: str) -> str:
-    """Extract the contents of a named PDDL section."""
+    """Extract the balanced parenthesised content of a named PDDL section.
+
+    Args:
+        text: Full PDDL problem string.
+        section: Section name without colon (e.g. "init", "goal").
+
+    Returns:
+        The text inside the section's outermost parentheses.
+
+    Raises:
+        ValueError: If parentheses in the section are unbalanced.
+    """
     match = re.search(
         rf"\(:{re.escape(section)}\b",
         text,
@@ -50,7 +69,14 @@ def extract_section(text: str, section: str) -> str:
 
 
 def parse_facts(section_text: str) -> set[tuple[str, tuple[str, ...]]]:
-    """Parse simple positive PDDL facts from a section."""
+    """Parse positive PDDL ground facts from a section string.
+
+    Args:
+        section_text: Extracted content of a PDDL section.
+
+    Returns:
+        Set of (predicate, args_tuple) pairs recognized in PREDICATES.
+    """
     facts = set()
 
     for match in re.finditer(r"\(([^()]+)\)", section_text):
@@ -68,6 +94,14 @@ def parse_facts(section_text: str) -> set[tuple[str, tuple[str, ...]]]:
 
 
 def load_pddl(path: Path) -> tuple[set, set]:
+    """Read a PDDL problem file and parse initial-state and goal facts.
+
+    Args:
+        path: Path to the PDDL problem file.
+
+    Returns:
+        A tuple of (init_facts_set, goal_facts_set).
+    """
     text = path.read_text()
 
     init_text = extract_section(text, "init")
@@ -77,18 +111,47 @@ def load_pddl(path: Path) -> tuple[set, set]:
 
 
 def f1(precision: float, recall: float) -> float:
+    """Compute the harmonic mean (F1 score) of precision and recall.
+
+    Args:
+        precision: Precision value between 0.0 and 1.0.
+        recall: Recall value between 0.0 and 1.0.
+
+    Returns:
+        Computed F1 score, or 0.0 if precision + recall is zero.
+    """
     if precision + recall == 0:
         return 0.0
     return 2 * precision * recall / (precision + recall)
+
+
 def format_metric(value) -> str:
+    """Format a numeric metric to three decimal places or 'N/A' if None.
+
+    Args:
+        value: Numeric float value or None.
+
+    Returns:
+        Formatted 3-decimal string or "N/A".
+    """
     if value is None:
         return "N/A"
     return f"{value:.3f}"
+
 
 def score_sets(
     predicted: set,
     ground_truth: set,
 ) -> dict:
+    """Compute TP, FP, FN, precision, recall, and F1 comparing two fact sets.
+
+    Args:
+        predicted: Set of predicted fact tuples.
+        ground_truth: Set of ground-truth fact tuples.
+
+    Returns:
+        Dict with keys "tp", "fp", "fn", "precision", "recall", and "f1".
+    """
     tp = len(predicted & ground_truth)
     fp = len(predicted - ground_truth)
     fn = len(ground_truth - predicted)
@@ -125,6 +188,20 @@ def evaluate(
     predicted_path: Path,
     result_path: Path,
 ) -> dict:
+    """Evaluate predicted PDDL against ground truth for one scenario.
+
+    Computes overall initial state and goal exact matches, F1 scores,
+    per-predicate precision/recall/F1, and aggregates by observability class.
+
+    Args:
+        scenario_id: Scenario identifier string.
+        gt_path: Path to ground-truth problem file.
+        predicted_path: Path to predicted problem file.
+        result_path: Path to runner result metadata JSON.
+
+    Returns:
+        Structured evaluation dict with metrics breakdown.
+    """
     result = {
         "scenario_id": scenario_id,
         "scoreable": False,
@@ -264,6 +341,11 @@ def evaluate(
 
 
 def main() -> int:
+    """CLI entry point for evaluating PDDL state metrics across scenarios.
+
+    Args passed via sys.argv are scenario IDs to evaluate. Saves per-scenario
+    `_state_metrics.json` files and prints summaries.
+    """
     if len(sys.argv) < 2:
         print(
             "Usage: python pipeline/phase3/evaluate_state.py "

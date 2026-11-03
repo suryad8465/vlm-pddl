@@ -1,3 +1,10 @@
+"""Single-scenario artifact orchestrator.
+
+Provides ``create_scenario``, which generates all files needed for one
+evaluation scenario: the state JSON, ground-truth PDDL problem, scene image,
+natural-language instruction, and ``scenario.json`` metadata manifest.
+"""
+
 from pathlib import Path
 import json
 
@@ -18,7 +25,32 @@ def create_scenario(
     instruction_style: str = "precise",
     output_root: str | Path = "scenarios",
 ) -> Path:
-    """Generate all artifacts for one scenario."""
+    """Generate all artifacts for one scenario and return its directory path.
+
+    Creates ``<output_root>/<scenario_id>/`` containing:
+    - ``state.json`` — serialised SceneState.
+    - ``gt_problem.pddl`` — ground-truth PDDL problem.
+    - ``scene.png`` — top-down PyBullet render (unlabelled).
+    - ``instruction.txt`` — natural-language task instruction.
+    - ``scenario.json`` — metadata manifest.
+
+    Args:
+        scenario_id: Unique identifier, e.g. "scenario_003".
+        state: Scene state for this scenario.
+        goal_location: Target location for the task goal.
+        goal_object: Object to retrieve (required for retrieval/multi_step).
+        layout: Layout name tag written to metadata (e.g. "baseline").
+        task_type: One of "navigation", "retrieval", or "multi_step".
+        instruction_style: One of "precise", "ambiguous", or "novel".
+        output_root: Root directory under which the scenario folder is created.
+
+    Returns:
+        Path to the created scenario directory.
+
+    Raises:
+        ValueError: If task_type is unrecognised or goal_object is missing for
+            non-navigation tasks.
+    """
     if task_type not in {"navigation", "retrieval", "multi_step"}:
         raise ValueError(f"Unknown task type: {task_type}")
 

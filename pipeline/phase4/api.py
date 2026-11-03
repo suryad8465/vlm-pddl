@@ -1,3 +1,10 @@
+"""Phase 4 API client with retry backoff and token budget management.
+
+Provides client calls for Phase 4 iterative refinement (temperature=0.7)
+and initial baseline queries (temperature=0), enforcing a conservative local
+token budget guard to avoid exhausting daily rate limits.
+"""
+
 import base64
 import os
 import time
@@ -28,6 +35,14 @@ client = OpenAI(
 
 
 def encode_image(path: Path) -> str:
+    """Base64-encode an image file and return the decoded ASCII string.
+
+    Args:
+        path: Path to the image file.
+
+    Returns:
+        Base64-encoded string representation of the image.
+    """
     with path.open("rb") as image_file:
         return base64.b64encode(
             image_file.read()
@@ -35,6 +50,14 @@ def encode_image(path: Path) -> str:
 
 
 def extract_usage(response) -> dict:
+    """Extract token usage metrics from an OpenAI chat completion response.
+
+    Args:
+        response: Response object from OpenAI client completions call.
+
+    Returns:
+        Dict with prompt_tokens, completion_tokens, and total_tokens.
+    """
     usage = response.usage
 
     if usage is None:
@@ -68,6 +91,20 @@ def query(
     *,
     token_budget_used: int,
 ) -> tuple[str, dict]:
+    """Execute a chat completion request with exponential backoff on rate limits.
+
+    Enforces local DAILY_TOKEN_GUARD to prevent exceeding token thresholds.
+
+    Args:
+        messages: List of OpenAI-format message dicts.
+        token_budget_used: Current accumulated token count used so far.
+
+    Returns:
+        A tuple of (output_content_string, api_record_dict).
+
+    Raises:
+        RuntimeError: If token budget is exceeded or requests fail after max retries.
+    """
 
     if token_budget_used >= DAILY_TOKEN_GUARD:
         raise RuntimeError(
@@ -159,8 +196,19 @@ def query_initial(
 ) -> tuple[str, dict]:
     """Run the unchanged Phase 3 generation as Phase 4 attempt 1.
 
-    This deliberately uses the Phase 3 generation settings:
-    temperature=0, max_tokens=1000, reasoning_effort=none.
+    Deliberately uses Phase 3 settings (temperature=0, max_tokens=1000,
+    reasoning_effort=none) while tracking token budget and retries.
+
+    Args:
+        image_path: Path to the scene image.
+        prompt: Formatted prompt string.
+        token_budget_used: Current accumulated token count used so far.
+
+    Returns:
+        A tuple of (output_content_string, api_record_dict).
+
+    Raises:
+        RuntimeError: If token budget is exceeded or requests fail.
     """
     image_b64 = encode_image(image_path)
 

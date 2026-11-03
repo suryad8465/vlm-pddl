@@ -1,12 +1,25 @@
+"""Natural-language task instruction generator.
+
+Generates fixed instruction strings for the three task types
+(navigation, retrieval, multi_step) crossed with three instruction styles
+(precise, ambiguous, novel). Used during dataset generation to populate each
+scenario's ``instruction.txt``.
+"""
+
 from typing import Literal
 
 
+# Permitted task categories for this dataset.
 TaskType = Literal[
     "navigation",
     "retrieval",
     "multi_step",
 ]
 
+# Permitted instruction phrasings:
+#   precise   – unambiguous destination and object.
+#   ambiguous – destination is underspecified ("over there").
+#   novel     – paraphrased using informal synonyms (e.g. "lounge").
 InstructionStyle = Literal[
     "precise",
     "ambiguous",
@@ -20,6 +33,24 @@ def make_instruction(
     object_name: str = "mug",
     destination: str = "living_room",
 ) -> str:
+    """Return a hard-coded natural-language instruction string.
+
+    Instruction text is fixed per (task_type, style) pair; object_name and
+    destination are interpolated where the phrasing allows.
+
+    Args:
+        task_type: One of "navigation", "retrieval", or "multi_step".
+        style: One of "precise", "ambiguous", or "novel".
+        object_name: Name of the object to retrieve (used for retrieval and
+            multi_step tasks).
+        destination: Target location name (used for precise retrieval only).
+
+    Returns:
+        A natural-language instruction string.
+
+    Raises:
+        ValueError: If task_type or style is not a recognised value.
+    """
     if task_type not in {
         "navigation",
         "retrieval",

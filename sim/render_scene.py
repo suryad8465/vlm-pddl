@@ -1,3 +1,13 @@
+"""Parameterised PyBullet scene renderer.
+
+Reads object and robot positions from a SceneState and renders a top-down
+floor-plan using PyBullet DIRECT (headless) mode. Optionally overlays room
+labels for the Phase 3 labelled-image condition using PIL.
+
+Unlike the prototype ``render.py``, all geometry is derived from the state
+rather than hard-coded.
+"""
+
 import numpy as np
 import pybullet as p
 from PIL import Image
@@ -23,6 +33,16 @@ ROBOT = [0.05, 0.25, 0.85, 1]
 
 
 def box(position, size, color):
+    """Create a static PyBullet box body and return its body ID.
+
+    Args:
+        position: (x, y, z) centre position in world space.
+        size: (sx, sy, sz) full extents in metres.
+        color: RGBA colour list, e.g. [0.75, 0.75, 0.75, 1].
+
+    Returns:
+        The PyBullet multibody ID of the created body.
+    """
     sx, sy, sz = size
 
     collision = p.createCollisionShape(
@@ -45,6 +65,17 @@ def box(position, size, color):
 
 
 def cylinder(position, radius, height, color):
+    """Create a static PyBullet cylinder body and return its body ID.
+
+    Args:
+        position: (x, y, z) centre position in world space.
+        radius: Cylinder radius in metres.
+        height: Cylinder height in metres.
+        color: RGBA colour list.
+
+    Returns:
+        The PyBullet multibody ID of the created body.
+    """
     collision = p.createCollisionShape(
         p.GEOM_CYLINDER,
         radius=radius,
@@ -67,7 +98,21 @@ def cylinder(position, radius, height, color):
 
 
 def render_scene(state: SceneState, output_path: str = "scene.png",label_rooms: bool = False,) -> None:
-    """Render a SceneState using the established Phase 1 house geometry."""
+    """Render a SceneState to a PNG image using PyBullet DIRECT mode.
+
+    Connects to PyBullet in headless mode, constructs the full house geometry
+    (floor, rooms, walls, objects, robot) from ``state``, renders a top-down
+    view, optionally draws room-name labels with PIL, saves the image, then
+    disconnects PyBullet.
+
+    The ``label_rooms`` flag is used for the Phase 3 labelled-image condition.
+    Labels identify room names only; they do not reveal object or robot state.
+
+    Args:
+        state: Scene state driving all geometry and robot position.
+        output_path: Path for the output PNG file.
+        label_rooms: If True, overlays room identifier text onto the image.
+    """
 
     p.connect(p.DIRECT)
     p.resetSimulation()
