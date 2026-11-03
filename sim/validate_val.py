@@ -1,3 +1,10 @@
+"""Two-stage validation of scenarios using Fast Downward and VAL.
+
+For each scenario in ``scenarios/``, generates a plan using Fast Downward,
+copies the resulting plan file to the scenario directory, and formally validates
+the plan against the PDDL domain and ground-truth problem using VAL (Validate).
+"""
+
 import re
 import shutil
 import subprocess
@@ -11,6 +18,19 @@ VAL = Path.home() / "VAL" / "build" / "bin" / "Validate"
 
 
 def validate_scenario(scenario_dir: Path) -> dict:
+    """Validate a single scenario with Fast Downward planning and VAL verification.
+
+    First invokes Fast Downward to find a plan for ``gt_problem.pddl``. If solved,
+    copies the SAS plan to ``plan.txt`` and invokes VAL to confirm the plan is
+    formally valid.
+
+    Args:
+        scenario_dir: Path to the scenario directory.
+
+    Returns:
+        A dict containing scenario name, planner_ok (bool), val_ok (bool),
+        plan length, and plan cost.
+    """
     problem = scenario_dir / "gt_problem.pddl"
     plan_file = scenario_dir / "plan.txt"
 
@@ -95,6 +115,10 @@ def validate_scenario(scenario_dir: Path) -> dict:
 
 
 def main() -> None:
+    """Validate all generated scenarios using both Fast Downward and VAL.
+
+    Exits with code 1 if any scenario fails either planner execution or VAL verification.
+    """
     scenarios = sorted(
         SCENARIOS_ROOT.glob("scenario_*")
     )

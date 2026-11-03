@@ -1,3 +1,10 @@
+"""Scenario validation using Fast Downward.
+
+Iterates over generated scenarios in ``scenarios/``, solves each ground-truth
+PDDL problem using Fast Downward (A* with lmcut heuristic), and asserts that
+every scenario is solvable.
+"""
+
 import re
 import subprocess
 from pathlib import Path
@@ -9,6 +16,17 @@ FAST_DOWNWARD = Path.home() / "downward" / "fast-downward.py"
 
 
 def validate_scenario(scenario_dir: Path) -> dict:
+    """Validate a single scenario by solving its ground-truth PDDL problem.
+
+    Runs Fast Downward on ``gt_problem.pddl`` and extracts solution metrics.
+
+    Args:
+        scenario_dir: Path to the scenario directory containing ``gt_problem.pddl``.
+
+    Returns:
+        A dict containing scenario name, planner exit code, solved status (bool),
+        plan length, and plan cost.
+    """
     problem = scenario_dir / "gt_problem.pddl"
 
     result = subprocess.run(
@@ -55,6 +73,10 @@ def validate_scenario(scenario_dir: Path) -> dict:
 
 
 def main() -> None:
+    """Validate all generated scenarios using Fast Downward.
+
+    Exits with code 1 if any scenario fails to solve or exits with non-zero code.
+    """
     scenarios = sorted(
         SCENARIOS_ROOT.glob("scenario_*")
     )
