@@ -1,0 +1,4 @@
+(pickup mug table kitchen)
+(move kitchen living_room)
+(place-at-location mug living_room)
+; cost = 3 (unit cost)
