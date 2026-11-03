@@ -1,3 +1,10 @@
+"""Phase 1 monolithic VLM problem generator and planner execution pipeline.
+
+Takes a scene image and natural-language instruction, queries the VLM (via Groq)
+to generate a complete PDDL problem file against the household domain, saves the
+generated problem, runs Fast Downward, and logs the execution output.
+"""
+
 import os
 import base64
 import re
@@ -37,7 +44,14 @@ client = OpenAI(
 # ============================================================
 
 def encode_image(path):
+    """Base64-encode an image file and return the decoded ASCII string.
 
+    Args:
+        path: Path or string pointing to the image file.
+
+    Returns:
+        Base64-encoded string representation of the image.
+    """
     with open(path, "rb") as image_file:
         return base64.b64encode(
             image_file.read()
@@ -48,6 +62,18 @@ def encode_image(path):
 # PROMPT
 # ============================================================
 def build_prompt(domain_text, instruction):
+    """Construct the system prompt and instructions for Phase 1 VLM query.
+
+    Embeds the fixed PDDL domain definition and user natural-language instruction
+    into a comprehensive visual-to-PDDL translation prompt.
+
+    Args:
+        domain_text: Full string content of the household PDDL domain.
+        instruction: Natural-language task instruction string.
+
+    Returns:
+        The formatted prompt string.
+    """
 
     return f"""
 You are a STRICT visual-to-PDDL translator for a household robot.
@@ -256,7 +282,14 @@ Return ONLY the PDDL problem.
 # ============================================================
 
 def extract_pddl(text):
+    """Strip optional markdown code block fences from a model response.
 
+    Args:
+        text: Raw text string returned by the VLM.
+
+    Returns:
+        Cleaned PDDL problem string.
+    """
     # If the model nevertheless uses a code block,
     # remove it.
 
@@ -277,7 +310,19 @@ def extract_pddl(text):
 # ============================================================
 
 def query_vlm(image_path, domain_text, instruction):
+    """Query the vision-language model with a scene image and task prompt.
 
+    Encodes the image, formats the prompt, makes an OpenAI API call via Groq,
+    and returns the extracted PDDL text.
+
+    Args:
+        image_path: Path to the input image file.
+        domain_text: Fixed household PDDL domain definition string.
+        instruction: Natural-language task instruction string.
+
+    Returns:
+        The extracted PDDL problem text.
+    """
     image_data = encode_image(image_path)
 
     prompt = build_prompt(
@@ -328,7 +373,17 @@ def query_vlm(image_path, domain_text, instruction):
 # ============================================================
 
 def run_planner(domain, problem):
+    """Run Fast Downward on the domain and problem files.
 
+    Uses A* search with the lmcut heuristic and a 60-second timeout.
+
+    Args:
+        domain: Path to the PDDL domain file.
+        problem: Path to the PDDL problem file.
+
+    Returns:
+        A tuple of (exit_code, combined_stdout_and_stderr).
+    """
     result = subprocess.run(
 
         [

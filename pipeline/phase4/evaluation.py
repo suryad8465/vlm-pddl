@@ -1,3 +1,9 @@
+"""Phase 4 deployment-time evaluation module.
+
+Evaluates generated PDDL candidates strictly without access to ground truth,
+checking syntax parsing and running Fast Downward planning.
+"""
+
 import re
 import subprocess
 import sys
@@ -9,7 +15,14 @@ FAST_DOWNWARD = Path.home() / "downward" / "fast-downward.py"
 
 
 def clean_response(text: str) -> str:
-    """Remove common reasoning/formatting wrappers before parsing."""
+    """Remove common reasoning/formatting wrappers before parsing.
+
+    Args:
+        text: Raw response text string from the model.
+
+    Returns:
+        Cleaned text stripped of <think> tags and markdown code blocks.
+    """
 
     text = text.strip()
 
@@ -35,11 +48,13 @@ def clean_response(text: str) -> str:
 
 
 def parse_response(text: str) -> dict:
-    """
-    Parse STATUS from a VLM response.
+    """Parse STATUS from a VLM response without using ground truth.
 
-    This follows the Phase 3 response format without using
-    ground truth.
+    Args:
+        text: Response text from the model.
+
+    Returns:
+        Dict with keys "status", "pddl", "reason", and "cleaned_response".
     """
 
     cleaned = clean_response(text)
@@ -90,10 +105,17 @@ def run_planner(
     problem: Path,
     plan_output: Path,
 ) -> dict:
-    """
-    Run Fast Downward as the deployment-time pipeline check.
+    """Run Fast Downward as the deployment-time pipeline check.
 
     No ground-truth problem is used here.
+
+    Args:
+        domain: Path to the PDDL domain file.
+        problem: Path to the candidate problem file to solve.
+        plan_output: Destination path where the found plan will be written.
+
+    Returns:
+        Dict containing planner solvability, timeout, exit code, output, and metrics.
     """
 
     start = time.perf_counter()
@@ -171,10 +193,19 @@ def evaluate_candidate(
     work_dir: Path,
     candidate_name: str,
 ) -> dict:
-    """
-    Evaluate a generated PDDL candidate using only deployment-time checks.
+    """Evaluate a generated PDDL candidate using only deployment-time checks.
 
-    Ground truth is deliberately not accepted as an argument.
+    Writes the candidate to disk, runs Fast Downward, and returns the planner
+    results without referencing ground truth.
+
+    Args:
+        domain: Path to the PDDL domain file.
+        pddl_text: Candidate PDDL problem string.
+        work_dir: Working directory to write candidate files.
+        candidate_name: Base name for candidate problem and plan files.
+
+    Returns:
+        Dict containing file paths and planner result metrics.
     """
 
     work_dir.mkdir(parents=True, exist_ok=True)

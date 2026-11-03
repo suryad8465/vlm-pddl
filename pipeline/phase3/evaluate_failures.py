@@ -1,3 +1,10 @@
+"""Phase 3 failure classification module.
+
+Takes a scenario run result and optional state metrics, evaluates boolean failure
+flags across 10 categories, identifies the primary failure category according to
+a predefined priority order, and computes overall task success.
+"""
+
 from __future__ import annotations
 
 import json
@@ -7,6 +14,7 @@ from pathlib import Path
 from pipeline.phase3.evaluate_state import evaluate
 
 
+# Priority order for attributing the primary failure category (most severe first).
 FAILURE_PRIORITY = (
     "api_error",
     "empty_response",
@@ -22,6 +30,14 @@ FAILURE_PRIORITY = (
 
 
 def load_result(path: Path) -> dict:
+    """Load and parse a JSON experiment result file.
+
+    Args:
+        path: Path to the .result.json file.
+
+    Returns:
+        Dict of parsed run result metadata.
+    """
     return json.loads(path.read_text())
 
 
@@ -29,6 +45,20 @@ def classify_failure(
     result: dict,
     state_metrics: dict | None = None,
 ) -> dict:
+    """Classify failure flags and primary failure mode for an evaluation run.
+
+    Evaluates flags for 10 distinct error types, determines task success
+    (composite criterion: correct STATUS, solved plan, goal exact match, VAL valid),
+    and selects the primary failure based on FAILURE_PRIORITY.
+
+    Args:
+        result: Run metadata dict loaded from scenario result JSON.
+        state_metrics: Optional state metrics dict from evaluate_state.py.
+
+    Returns:
+        Dict containing task_success (bool), failure_flags (dict of bools),
+        primary_failure (str or None), and failure_priority list.
+    """
     flags = {
         "api_error": False,
         "empty_response": False,
@@ -150,6 +180,11 @@ def classify_failure(
     }
 
 def main() -> int:
+    """CLI entry point for failure classification.
+
+    Accepts the path to a `<scenario_id>.result.json` file, computes failure
+    classifications, and prints the resulting JSON dictionary to stdout.
+    """
     if len(sys.argv) != 2:
         print(
             "Usage: python pipeline/phase3/evaluate_failures.py "

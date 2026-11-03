@@ -1,3 +1,9 @@
+"""Phase 4 VLM self-verification module.
+
+Queries the VLM without ground truth to assess whether a generated PDDL candidate
+is consistent with the physical scene image and user instruction.
+"""
+
 import base64
 from pathlib import Path
 
@@ -10,9 +16,18 @@ def build_verifier_messages(
     instruction: str,
     pddl_text: str,
 ) -> list:
-    """Build the Phase 4 B self-verification request.
+    """Build the Phase 4 self-verification prompt message payload.
 
-    Ground truth is deliberately excluded.
+    Ground truth is deliberately excluded; checks consistency purely between
+    the scene image, user instruction, and candidate PDDL.
+
+    Args:
+        image_path: Path to the scene image.
+        instruction: Natural-language task instruction.
+        pddl_text: Generated candidate PDDL problem string.
+
+    Returns:
+        List of message dicts formatted for OpenAI chat completion requests.
     """
 
     with image_path.open("rb") as image_file:
@@ -81,7 +96,17 @@ Verify the generated PDDL against the image and instruction.
 
 
 def parse_verifier_response(text: str) -> dict:
-    """Parse B's constrained response format."""
+    """Parse the verifier's constrained response format.
+
+    Extracts status ("CONSISTENT", "INCONSISTENT", or "INVALID") and any
+    accompanying discrepancy reason.
+
+    Args:
+        text: Raw response string from the verifier.
+
+    Returns:
+        Dict with keys "status" and "reason".
+    """
 
     cleaned = text.strip()
 
@@ -118,7 +143,17 @@ def query_verifier(
     pddl_text: str,
     token_budget_used: int,
 ) -> tuple[dict, dict]:
-    """Run B self-verification using the Phase 4 refinement API settings."""
+    """Execute self-verification using the Phase 4 refinement API settings.
+
+    Args:
+        image_path: Path to the scene image.
+        instruction: Natural-language task instruction.
+        pddl_text: Candidate PDDL problem string.
+        token_budget_used: Current accumulated token budget count.
+
+    Returns:
+        A tuple of (parsed_verifier_dict, api_record_dict).
+    """
 
     messages = build_verifier_messages(
         image_path=image_path,
